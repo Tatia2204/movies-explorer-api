@@ -8,52 +8,52 @@ const { AuthError } = require('../errors/AuthError');
 const { ConflictError } = require('../errors/ConflictError');
 
 // GET /users/me возвращает информацию о пользователе
-module.exports.getCurrentUser = (req, res, next) => {
-  const userId = req.user._id;
-  User.findById(userId).then((user) => {
+module.exports.getCurrentUser = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
     if (!user) {
       throw new NotFoundError('Пользователь не найден');
     }
     res.send(user);
-  })
-    .catch(next);
+  } catch (err) {
+    next(new AuthError(err.message));
+  }
 };
 
 // POST /signup создаем нового пользователя
-module.exports.createUser = (req, res, next) => {
+module.exports.createUser = async (req, res, next) => {
   const {
     name, email, password,
   } = req.body;
-
-  bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name, email, password: hash,
-    }))
-    .then((user) => {
-      if (!user) {
-        return next(new NotFoundError('Пользователь не найден'));
-      } return res.send({
+  try {
+    const passwordHash = await bcrypt.hash(password, 10);
+    const user = User.create({
+      name, email, password: passwordHash,
+    });
+    if (user) {
+      res.send({
         name: user.name,
         email: user.email,
         _id: user._id,
       });
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new IncorrectDataError('Некорректные данные'));
-      } else if (err.code === 11000) {
-        next(new ConflictError('Пользователь с таким email уже существует'));
-      } else {
-        next(err);
-      }
-    });
+    }
+  } catch (err) {
+    if (err.name === 'ValidationError') {
+      next(new IncorrectDataError('Некорректные данные'));
+    } else if (err.code === 11000) {
+      next(new ConflictError('Пользователь с таким email уже существует'));
+    } else {
+      next(err);
+    }
+  }
 };
 
 // PATCH /users/me обновляет информацию о пользователе
 module.exports.getUserUpdate = async (req, res, next) => {
   const { name, email } = req.body;
-  const userId = req.user._id;
   try {
+    const userId = req.user._id;
     const user = await User.findByIdAndUpdate(
       userId,
       { name, email },
@@ -75,22 +75,22 @@ module.exports.getUserUpdate = async (req, res, next) => {
 };
 
 // POST /signin авторизация пользователя
-module.exports.login = (req, res, next) => {
-  const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
-    .then((user) => {
-      // проверим существует ли такой email или пароль
-      if (!user || !password) {
-        return next(new IncorrectDataError('Неверный email или пароль.'));
-      }
+module.exports.login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      throw new IncorrectDataError('Неверный почта или пароль.');
+    }
+    const user = await User.findUserByCredentials(email, password);
+    if (user) {
       const token = jwt.sign(
         { _id: user._id },
         NODE_ENV === 'production' ? JWT_SECRET : 'tt-secret',
         { expiresIn: '7d' },
       );
-      return res.send({ token });
-    })
-    .catch((err) => {
-      next(new AuthError(err.message));
-    });
+      res.send({ token });
+    }
+  } catch (err) {
+    next(new AuthError(err.message));
+  }
 };
