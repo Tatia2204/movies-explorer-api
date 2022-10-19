@@ -52,7 +52,7 @@ const movieSchema = new mongoose.Schema({
     required: true,
   },
   movieId: { // id фильма
-    type: String,
+    type: Number,
     required: true,
   },
   nameRU: { // русское название фильма
