@@ -8,8 +8,9 @@ const { errors } = require('celebrate');
 const DefaultError = require('./errors/DefaultError');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const routes = require('./routes');
+const { MONGOBASE } = require('./constants/constants');
 
-const { PORT = 3000, DB_ADDRESS = 'mongodb://localhost:27017/bitfilmsdb' } = process.env;
+const { PORT = 3000, DB_ADDRESS = MONGOBASE } = process.env;
 const app = express();
 
 app.use(cors());
