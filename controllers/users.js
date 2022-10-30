@@ -7,15 +7,17 @@ const { IncorrectDataError } = require('../errors/IncorrectDataError');
 const { ConflictError } = require('../errors/ConflictError');
 
 // GET /users/me возвращает информацию о пользователе
-module.exports.getCurrentUser = (req, res, next) => {
-  const userId = req.user._id;
-
-  User.findById(userId)
-    .orFail(() => {
+module.exports.getCurrentUser = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+    if (!user) {
       throw new NotFoundError('Пользователь не найден');
-    })
-    .then((user) => res.send(user))
-    .catch(next);
+    }
+    res.send(user);
+  } catch (err) {
+    next(err);
+  }
 };
 
 // POST /signup создаем нового пользователя
