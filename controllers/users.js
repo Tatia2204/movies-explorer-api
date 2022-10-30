@@ -16,12 +16,8 @@ module.exports.getCurrentUser = async (req, res, next) => {
     }
     res.send(user);
   } catch (err) {
-    if (err.name === 'CastError') {
-      next(new IncorrectDataError('Некорректные данные'));
-    } else {
-      next(err);
+    next(err);
     }
-  }
 };
 
 // POST /signup создаем нового пользователя
@@ -68,7 +64,7 @@ module.exports.getUserUpdate = async (req, res, next) => {
     }
     res.send({ data: user });
   } catch (err) {
-    if (err.name === 'ValidationError' || 'CastError') {
+    if (err.name === 'ValidationError') {
       next(new IncorrectDataError('Некорректные данные'));
     } else if (err.code === 11000) {
       next(new ConflictError('Пользователь с таким email уже существует'));
