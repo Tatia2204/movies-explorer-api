@@ -11,18 +11,58 @@ module.exports.getMovies = (req, res, next) => {
 };
 
 // POST /movies создаёт фильм
-module.exports.createMovie = (req, res, next) => {
-  const owner = req.user._id;
+// module.exports.createMovie = (req, res, next) => {
+//   const owner = req.user._id;
+//
+//   Movie.create({ owner, ...req.body })
+//     .then((movie) => res.send(movie))
+//     .catch((err) => {
+//       if (err.name === 'ValidationError') {
+//         throw new IncorrectDataError('Некорректные данные');
+//       }
+//       next(err);
+//     })
+//     .catch(next);
+// };
 
-  Movie.create({ owner, ...req.body })
-    .then((movie) => res.send(movie))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new IncorrectDataError('Некорректные данные');
-      }
+module.exports.createMovie = async (req, res, next) => {
+  const {
+    country,
+    director,
+    duration,
+    year,
+    description,
+    image,
+    trailerLink,
+    thumbnail,
+    movieId,
+    nameRU,
+    nameEN,
+  } = req.body;
+  const owner = req.user._id;
+  try {
+    const movie = await Movie.create({
+      country,
+      director,
+      duration,
+      year,
+      description,
+      image,
+      trailerLink,
+      owner,
+      thumbnail,
+      movieId,
+      nameRU,
+      nameEN,
+    });
+    res.send(movie);
+  } catch (err) {
+    if (err.name === 'ValidationError') {
+      next(new IncorrectDataError('Некорректные данные'));
+    } else {
       next(err);
-    })
-    .catch(next);
+    }
+  }
 };
 
 // DELETE /movies/_id удаляет сохранённый фильм по id
