@@ -16,6 +16,12 @@
 * POST /movies — создаёт фильм с переданными в теле запроса country, director, duration, year, description, image, trailer, thumbnail, movieId, nameRU и nameEN;
 * DELETE /movies/:movieId — удаляет фильм по _id.
 
+### Директории:
+* /controllers – содержит файлы описания моделей пользователя и фильма;
+* /models – содержит файлы описания схем пользователя и фильма;
+* /routes — содержит описание основных роутов для пользователя и фильма;
+* /errors – содержит описание ошибок
+
 ### Технологии:
 
 * JavaScript:
@@ -27,5 +33,4 @@
 * MongoDB;
 * Сelebrate;
 * Winston.
-
 
