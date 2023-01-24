@@ -37,7 +37,7 @@
 ### Установка и запуск приложения:
 
 **Клонировать репозиторий:**
-git clone https://github.com/Tatia2204/mesto.git
+git clone https://github.com/Tatia2204/movies-explorer-api.git
 
 **Установить зависимости:**
 npm install
