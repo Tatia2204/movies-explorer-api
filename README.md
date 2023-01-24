@@ -34,3 +34,28 @@
 * Сelebrate;
 * Winston.
 
+### Установка и запуск приложения:
+
+**Клонировать репозиторий:**
+git clone https://github.com/Tatia2204/mesto.git
+
+**Установить зависимости:**
+npm install
+
+**Запустить сервер:**
+npm run start
+
+**Запустить сервер с hot-reload:**
+npm run dev
+
+### Языки:
+
+* JavaScript
+
+### Библиотеки:
+
+* Express
+
+### База данных:
+
+* MongoDB
